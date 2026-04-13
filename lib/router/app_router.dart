@@ -42,6 +42,7 @@ import '../features/gamification/presentation/screens/achievements_screen.dart';
 import '../features/gamification/presentation/screens/unlocks_shop_screen.dart';
 import '../features/gamification/presentation/screens/level_progress_screen.dart';
 import '../features/gamification/presentation/screens/reward_screen.dart';
+import '../features/gamification/presentation/screens/garden_screen.dart';
 
 // ─── Соціальна мережа ───────────────────────────────────────────────────────
 import '../features/social/presentation/screens/share_progress_screen.dart';
@@ -55,6 +56,7 @@ import '../features/settings/presentation/screens/change_theme_screen.dart';
 import '../features/settings/presentation/screens/notifications_screen.dart';
 import '../features/settings/presentation/screens/security_screen.dart';
 import '../features/settings/presentation/screens/backup_screen.dart';
+import '../features/settings/presentation/screens/subscription_scanner_screen.dart';
 
 // ─── Фінальні екрани ─────────────────────────────────────────────────────────
 import '../features/final/presentation/screens/cinematic_screen.dart';
@@ -118,6 +120,7 @@ class AppRoutes {
   static const String achievements = '/achievements';
   static const String unlocks = '/unlocks';
   static const String reward = '/reward';
+  static const String garden = '/garden';
 
   // ─── Соціальна мережа ───────────────────────────────────────────────────
   static const String share = '/share';
@@ -131,6 +134,7 @@ class AppRoutes {
   static const String notifications = '/notifications';
   static const String security = '/security';
   static const String backup = '/backup';
+  static const String subscriptionScanner = '/subscription-scanner';
 
   // ─── Фінальні екрани ────────────────────────────────────────────────────
   static const String cinematic = '/cinematic';
@@ -180,6 +184,7 @@ class AppRoutes {
     achievements,
     unlocks,
     reward,
+    garden,
     share,
     motivation,
     historyAchievements,
@@ -189,6 +194,7 @@ class AppRoutes {
     notifications,
     security,
     backup,
+    subscriptionScanner,
     cinematic,
     journey,
     newGoal,
@@ -1251,6 +1257,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: const RewardScreen(),
         ),
       ),
+      GoRoute(
+        path: AppRoutes.garden,
+        page: (state) => _slideUpPage(
+          state: state,
+          child: const GardenScreen(),
+        ),
+      ),
 
       // ─── СОЦІАЛЬНА МЕРЕЖА ─────────────────────────────────────────────
       GoRoute(
@@ -1309,6 +1322,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         page: (state) => _slideRightPage(
           state: state,
           child: const BackupScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.subscriptionScanner,
+        page: (state) => _slideRightPage(
+          state: state,
+          child: const SubscriptionScannerScreen(),
         ),
       ),
 

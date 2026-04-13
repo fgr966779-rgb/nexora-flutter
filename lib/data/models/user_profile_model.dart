@@ -36,6 +36,7 @@ class UserProfile {
   String? bio;
   String? location;
   DateTime? birthDate;
+  double hourlyRate;
 
   UserProfile({
     this.name = 'Користувач',
@@ -69,6 +70,7 @@ class UserProfile {
     this.bio,
     this.location,
     this.birthDate,
+    this.hourlyRate = 200.0,
   })  : notificationPreferences = notificationPreferences ?? _defaultNotifications(),
         xpHistory = xpHistory ?? [];
 
@@ -238,6 +240,12 @@ class UserProfile {
   }
 
   // ─── Заповненість профілю ──────────────────────────────────────────
+
+  /// Обчислює кількість годин роботи для вказаної суми.
+  double calculateWorkHours(double amount) {
+    if (hourlyRate <= 0) return 0;
+    return amount / hourlyRate;
+  }
 
   /// Відсоток заповненості профілю (0–100).
   int get profileCompletionPercent {
@@ -652,6 +660,77 @@ class UserProfile {
     if (location != null) this.location = location;
   }
 
+  /// Створює копію профілю з можливістю заміни полів.
+  UserProfile copyWith({
+    String? name,
+    String? email,
+    String? avatarUrl,
+    int? xp,
+    int? coins,
+    int? currentLevel,
+    int? currentStreak,
+    int? longestStreak,
+    DateTime? lastActiveDate,
+    List<String>? unlockedBadges,
+    List<String>? purchasedUnlocks,
+    String? activeTheme,
+    bool? soundsEnabled,
+    bool? hapticsEnabled,
+    DateTime? createdAt,
+    Map<String, bool>? notificationPreferences,
+    List<XpHistoryEntry>? xpHistory,
+    int? totalCoinsEarned,
+    int? totalCoinsSpent,
+    AvatarStyle? avatarStyle,
+    NotificationSchedule? notificationSchedule,
+    ThemeModePreference? themeMode,
+    PrivacySettings? privacySettings,
+    int? totalGoalsCreated,
+    int? totalGoalsCompleted,
+    int? totalChallengesCompleted,
+    int? totalDeposits,
+    double? totalSavedAmount,
+    String? bio,
+    String? location,
+    DateTime? birthDate,
+    double? hourlyRate,
+  }) {
+    return UserProfile(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      xp: xp ?? this.xp,
+      coins: coins ?? this.coins,
+      currentLevel: currentLevel ?? this.currentLevel,
+      currentStreak: currentStreak ?? this.currentStreak,
+      longestStreak: longestStreak ?? this.longestStreak,
+      lastActiveDate: lastActiveDate ?? this.lastActiveDate,
+      unlockedBadges: unlockedBadges ?? this.unlockedBadges,
+      purchasedUnlocks: purchasedUnlocks ?? this.purchasedUnlocks,
+      activeTheme: activeTheme ?? this.activeTheme,
+      soundsEnabled: soundsEnabled ?? this.soundsEnabled,
+      hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
+      createdAt: createdAt ?? this.createdAt,
+      notificationPreferences: notificationPreferences ?? this.notificationPreferences,
+      xpHistory: xpHistory ?? this.xpHistory,
+      totalCoinsEarned: totalCoinsEarned ?? this.totalCoinsEarned,
+      totalCoinsSpent: totalCoinsSpent ?? this.totalCoinsSpent,
+      avatarStyle: avatarStyle ?? this.avatarStyle,
+      notificationSchedule: notificationSchedule ?? this.notificationSchedule,
+      themeMode: themeMode ?? this.themeMode,
+      privacySettings: privacySettings ?? this.privacySettings,
+      totalGoalsCreated: totalGoalsCreated ?? this.totalGoalsCreated,
+      totalGoalsCompleted: totalGoalsCompleted ?? this.totalGoalsCompleted,
+      totalChallengesCompleted: totalChallengesCompleted ?? this.totalChallengesCompleted,
+      totalDeposits: totalDeposits ?? this.totalDeposits,
+      totalSavedAmount: totalSavedAmount ?? this.totalSavedAmount,
+      bio: bio ?? this.bio,
+      location: location ?? this.location,
+      birthDate: birthDate ?? this.birthDate,
+      hourlyRate: hourlyRate ?? this.hourlyRate,
+    );
+  }
+
   /// Оновлює дату останньої активності.
   void touchActivity() {
     lastActiveDate = DateTime.now();
@@ -882,6 +961,7 @@ class UserProfile {
       birthDate: json['birthDate'] != null
           ? DateTime.parse(json['birthDate'] as String)
           : null,
+      hourlyRate: (json['hourlyRate'] as num?)?.toDouble() ?? 200.0,
     );
   }
 
@@ -918,6 +998,7 @@ class UserProfile {
       'bio': bio,
       'location': location,
       'birthDate': birthDate?.toIso8601String(),
+      'hourlyRate': hourlyRate,
     };
   }
 

@@ -714,6 +714,17 @@ class _QuickAddSheetState extends ConsumerState<QuickAddSheet> {
             Text('🎉 Ціль буде досягнуто!', style: AppTypography.labelSmall.copyWith(color: AppColorsPS5.success, fontWeight: FontWeight.w600)),
           ])),
         const SizedBox(height: Spacing.xs),
+        Row(
+          children: [
+            Icon(Icons.schedule_rounded, size: 12, color: isLight ? AppColorsMonitor.textHint : AppColorsPS5.textHint),
+            const SizedBox(width: 4),
+            Text(
+              'Це коштує ${ref.watch(userRepositoryProvider).getUser().calculateWorkHours(inputAmount).toStringAsFixed(1)} год роботи',
+              style: AppTypography.caption.copyWith(color: isLight ? AppColorsMonitor.textSecondary : AppColorsPS5.textSecondary),
+            ),
+          ],
+        ),
+        const SizedBox(height: Spacing.xs),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text('XP +${(inputAmount ~/ 10).clamp(5, 50)}', style: AppTypography.labelSmall.copyWith(color: AppColorsPS5.xp, fontWeight: FontWeight.w600)),
           if (_isScheduled) Text('🗓 Заплановано: $_scheduleFreq', style: AppTypography.labelSmall.copyWith(color: AppColorsPS5.success, fontWeight: FontWeight.w600)),
