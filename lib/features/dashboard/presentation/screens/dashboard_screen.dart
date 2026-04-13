@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
@@ -392,7 +393,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                           const SizedBox(height: Spacing.base),
                           AppProgressBar(progress: goal.progress, isLightTheme: isLight, isPulsing: isAlmost),
                           const SizedBox(height: Spacing.sm),
-                          Text('Залишилось ${goal.remaining.toInt().formatUAH()} грн', style: AppTypography.labelMedium.copyWith(color: isLight ? AppColorsMonitor.textSecondary : AppColorsPS5.textSecondary)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Залишилось ${goal.remaining.toInt().formatUAH()} грн', style: AppTypography.labelMedium.copyWith(color: isLight ? AppColorsMonitor.textSecondary : AppColorsPS5.textSecondary)),
+                              Text(
+                                '${ref.watch(userRepositoryProvider).getUser().calculateWorkHours(goal.remaining).toStringAsFixed(1)} год роботи',
+                                style: AppTypography.caption.copyWith(color: isLight ? AppColorsMonitor.textHint : AppColorsPS5.textHint),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -748,7 +758,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 }
 
 /// Швидкі дії — рядок із 5 кнопок + кнопка теми/туторіалу.
-class _QuickActions extends StatelessWidget {
+class _QuickActions extends ConsumerWidget {
   const _QuickActions({required this.isLight, required this.onAdd, required this.onTutorial, required this.onTheme});
   final bool isLight;
   final VoidCallback onAdd;
@@ -756,14 +766,15 @@ class _QuickActions extends StatelessWidget {
   final VoidCallback onTheme;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final actions = [
       _QuickAction(icon: Icons.add_circle_rounded, label: 'Додати', onTap: onAdd, delay: 0),
       _QuickAction(icon: Icons.bolt_rounded, label: 'Виклики', onTap: () {}, delay: 1),
       _QuickAction(icon: Icons.bar_chart_rounded, label: 'Статистика', onTap: () {}, delay: 2),
-      _QuickAction(icon: Icons.school_rounded, label: 'Навчання', onTap: onTutorial, delay: 3),
-      _QuickAction(icon: Icons.palette_rounded, label: 'Тема', onTap: onTheme, delay: 4),
-      _QuickAction(icon: Icons.people_rounded, label: 'Друзі', onTap: () {}, delay: 5),
+      _QuickAction(icon: Icons.park_rounded, label: 'Сад', onTap: () => context.push('/garden'), delay: 3),
+      _QuickAction(icon: Icons.school_rounded, label: 'Навчання', onTap: onTutorial, delay: 4),
+      _QuickAction(icon: Icons.palette_rounded, label: 'Тема', onTap: onTheme, delay: 5),
+      _QuickAction(icon: Icons.people_rounded, label: 'Друзі', onTap: () {}, delay: 6),
     ];
 
     return Padding(
