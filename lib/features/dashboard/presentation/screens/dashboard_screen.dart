@@ -759,11 +759,11 @@ class _QuickActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final actions = [
       _QuickAction(icon: Icons.add_circle_rounded, label: 'Додати', onTap: onAdd, delay: 0),
-      _QuickAction(icon: Icons.bolt_rounded, label: 'Виклики', onTap: () {}, delay: 1),
-      _QuickAction(icon: Icons.bar_chart_rounded, label: 'Статистика', onTap: () {}, delay: 2),
-      _QuickAction(icon: Icons.school_rounded, label: 'Навчання', onTap: onTutorial, delay: 3),
-      _QuickAction(icon: Icons.palette_rounded, label: 'Тема', onTap: onTheme, delay: 4),
-      _QuickAction(icon: Icons.people_rounded, label: 'Друзі', onTap: () {}, delay: 5),
+      _QuickAction(icon: Icons.bolt_rounded, label: 'Виклики', onTap: () => Navigator.of(context).pushNamed(AppRoutes.challenges), delay: 1),
+      _QuickAction(icon: Icons.bar_chart_rounded, label: 'Статистика', onTap: () => Navigator.of(context).pushNamed(AppRoutes.stats), delay: 2),
+      _QuickAction(icon: Icons.school_rounded, label: 'Академія', onTap: () => Navigator.of(context).pushNamed(AppRoutes.academy), delay: 3),
+      _QuickAction(icon: Icons.account_balance_wallet_rounded, label: 'Бюджет', onTap: () => Navigator.of(context).pushNamed(AppRoutes.budget), delay: 4),
+      _QuickAction(icon: Icons.family_restroom_rounded, label: 'Сім\'я', onTap: () => Navigator.of(context).pushNamed(AppRoutes.family), delay: 5),
     ];
 
     return Padding(

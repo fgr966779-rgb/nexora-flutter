@@ -389,9 +389,9 @@ class _OverallStatsScreenState extends State<OverallStatsScreen>
                     const SizedBox(width: Spacing.sm),
                     Expanded(
                       child: AppButtonPrimary(
-                        label: 'Поділитися',
-                        icon: Icons.share_rounded,
-                        onPressed: _onShare,
+                        label: 'Бюджет',
+                        icon: Icons.account_balance_wallet_rounded,
+                        onPressed: () => Navigator.of(context).pushNamed(AppRoutes.budget),
                         isLightTheme: !isDark,
                       ),
                     ),

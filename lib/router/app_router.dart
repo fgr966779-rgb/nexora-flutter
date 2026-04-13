@@ -26,6 +26,7 @@ import '../features/deposit/presentation/screens/setup_autopay_screen.dart';
 import '../features/deposit/presentation/screens/success_animation_screen.dart';
 import '../features/deposit/presentation/screens/error_cancel_screen.dart';
 import '../features/deposit/presentation/screens/challenge_complete_screen.dart';
+import '../features/deposit/presentation/screens/smart_savings_screen.dart';
 
 // ─── Аналітика ──────────────────────────────────────────────────────────────
 import '../features/analytics/presentation/screens/overall_stats_screen.dart';
@@ -34,6 +35,8 @@ import '../features/analytics/presentation/screens/transaction_history_screen.da
 import '../features/analytics/presentation/screens/forecast_screen.dart';
 import '../features/analytics/presentation/screens/period_comparison_screen.dart';
 import '../features/analytics/presentation/screens/activity_detail_screen.dart';
+import '../features/analytics/presentation/screens/budget_overview_screen.dart';
+import '../features/academy/presentation/screens/academy_screen.dart';
 
 // ─── Гейміфікація ───────────────────────────────────────────────────────────
 import '../features/gamification/presentation/screens/user_level_screen.dart';
@@ -48,6 +51,7 @@ import '../features/social/presentation/screens/share_progress_screen.dart';
 import '../features/social/presentation/screens/motivation_feed_screen.dart';
 import '../features/social/presentation/screens/achievement_history_screen.dart';
 import '../features/social/presentation/screens/result_preview_screen.dart';
+import '../features/social/presentation/screens/family_management_screen.dart';
 
 // ─── Налаштування ────────────────────────────────────────────────────────────
 import '../features/settings/presentation/screens/profile_screen.dart';
@@ -102,6 +106,7 @@ class AppRoutes {
   // ─── Автоплатежі ────────────────────────────────────────────────────────
   static const String autoPayments = '/auto-payments';
   static const String setupAutopay = '/setup-autopay';
+  static const String smartSavings = '/smart-savings';
 
   // ─── Аналітика ──────────────────────────────────────────────────────────
   static const String stats = '/stats';
@@ -110,6 +115,8 @@ class AppRoutes {
   static const String forecast = '/forecast';
   static const String comparison = '/comparison';
   static const String activity = '/activity';
+  static const String budget = '/budget';
+  static const String academy = '/academy';
 
   // ─── Гейміфікація ──────────────────────────────────────────────────────
   static const String level = '/level';
@@ -124,6 +131,7 @@ class AppRoutes {
   static const String motivation = '/motivation';
   static const String historyAchievements = '/history-achievements';
   static const String resultPreview = '/result-preview';
+  static const String family = '/family';
 
   // ─── Налаштування ───────────────────────────────────────────────────────
   static const String profile = '/profile';
@@ -168,12 +176,15 @@ class AppRoutes {
     challengeComplete,
     autoPayments,
     setupAutopay,
+    smartSavings,
     stats,
     chart,
     history,
     forecast,
     comparison,
     activity,
+    budget,
+    academy,
     level,
     levelProgress,
     badges,
@@ -184,6 +195,7 @@ class AppRoutes {
     motivation,
     historyAchievements,
     resultPreview,
+    family,
     profile,
     changeTheme,
     notifications,
@@ -1170,6 +1182,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: const SetupAutopayScreen(),
         ),
       ),
+      GoRoute(
+        path: AppRoutes.smartSavings,
+        page: (state) => _slideRightPage(
+          state: state,
+          child: const SmartSavingsScreen(),
+        ),
+      ),
 
       // ─── АНАЛІТИКА — ДОДАТКОВІ ───────────────────────────────────────
       GoRoute(
@@ -1205,6 +1224,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         page: (state) => _slideRightPage(
           state: state,
           child: const ActivityDetailScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.budget,
+        page: (state) => _slideRightPage(
+          state: state,
+          child: const BudgetOverviewScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.academy,
+        page: (state) => _slideRightPage(
+          state: state,
+          child: const AcademyScreen(),
         ),
       ),
 
@@ -1279,6 +1312,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         page: (state) => _zoomInPage(
           state: state,
           child: const ResultPreviewScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.family,
+        page: (state) => _slideRightPage(
+          state: state,
+          child: const FamilyManagementScreen(),
         ),
       ),
 
