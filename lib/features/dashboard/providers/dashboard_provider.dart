@@ -263,7 +263,13 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
       int longestStreak = 0;
 
       if (goal != null) {
-        final streakData = StreakCalculator.updateStreak(goal);
+        final streakData = StreakCalculator.updateStreak(
+          lastDepositDate: goal.lastDepositDate,
+          currentStreak: goal.streakDays,
+          longestStreak: goal.longestStreak,
+          isHolidayModeActive: goal.isHolidayModeActive,
+          isNewDeposit: false,
+        );
         currentStreak = streakData['current']!;
         longestStreak = streakData['longest']!;
       }
@@ -323,7 +329,13 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
       int longestStreak = 0;
 
       if (goal != null) {
-        final streakData = StreakCalculator.updateStreak(goal);
+        final streakData = StreakCalculator.updateStreak(
+          lastDepositDate: goal.lastDepositDate,
+          currentStreak: goal.streakDays,
+          longestStreak: goal.longestStreak,
+          isHolidayModeActive: goal.isHolidayModeActive,
+          isNewDeposit: false,
+        );
         currentStreak = streakData['current']!;
         longestStreak = streakData['longest']!;
       }
@@ -616,12 +628,18 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
       _transactionRepo.save(transaction);
 
       // Оновлюємо ціль.
+      final streakData = StreakCalculator.updateStreak(
+        lastDepositDate: goal.lastDepositDate,
+        currentStreak: goal.streakDays,
+        longestStreak: goal.longestStreak,
+        isHolidayModeActive: goal.isHolidayModeActive,
+        isNewDeposit: true,
+      );
+
       goal.currentAmount += amount;
       goal.lastDepositDate = DateTime.now();
-      goal.streakDays = StreakCalculator.updateStreak(goal)['current']!;
-      if (goal.streakDays > goal.longestStreak) {
-        goal.longestStreak = goal.streakDays;
-      }
+      goal.streakDays = streakData['current']!;
+      goal.longestStreak = streakData['longest']!;
 
       // Перевіряємо досягнення цілі.
       bool goalReached = false;

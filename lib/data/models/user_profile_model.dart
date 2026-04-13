@@ -33,6 +33,7 @@ class UserProfile {
   int totalChallengesCompleted;
   int totalDeposits;
   double totalSavedAmount;
+  double hourlyRate;
   String? bio;
   String? location;
   DateTime? birthDate;
@@ -66,6 +67,7 @@ class UserProfile {
     this.totalChallengesCompleted = 0,
     this.totalDeposits = 0,
     this.totalSavedAmount = 0,
+    this.hourlyRate = 200.0,
     this.bio,
     this.location,
     this.birthDate,
@@ -223,6 +225,12 @@ class UserProfile {
 
   /// Чи досягнуто максимального рівня.
   bool get isMaxLevel => level >= levelThresholds.length - 1;
+
+  /// Розраховує еквівалент суми в робочих годинах.
+  double calculateWorkHours(double amount) {
+    if (hourlyRate <= 0) return 0;
+    return amount / hourlyRate;
+  }
 
   /// Назва наступного рівня.
   String get nextLevelName {
@@ -741,6 +749,77 @@ class UserProfile {
     };
   }
 
+  /// Створює копію профілю з можливістю заміни полів.
+  UserProfile copyWith({
+    String? name,
+    String? email,
+    String? avatarUrl,
+    int? xp,
+    int? coins,
+    int? currentLevel,
+    int? currentStreak,
+    int? longestStreak,
+    DateTime? lastActiveDate,
+    List<String>? unlockedBadges,
+    List<String>? purchasedUnlocks,
+    String? activeTheme,
+    bool? soundsEnabled,
+    bool? hapticsEnabled,
+    DateTime? createdAt,
+    Map<String, bool>? notificationPreferences,
+    List<XpHistoryEntry>? xpHistory,
+    int? totalCoinsEarned,
+    int? totalCoinsSpent,
+    AvatarStyle? avatarStyle,
+    NotificationSchedule? notificationSchedule,
+    ThemeModePreference? themeMode,
+    PrivacySettings? privacySettings,
+    int? totalGoalsCreated,
+    int? totalGoalsCompleted,
+    int? totalChallengesCompleted,
+    int? totalDeposits,
+    double? totalSavedAmount,
+    double? hourlyRate,
+    String? bio,
+    String? location,
+    DateTime? birthDate,
+  }) {
+    return UserProfile(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      xp: xp ?? this.xp,
+      coins: coins ?? this.coins,
+      currentLevel: currentLevel ?? this.currentLevel,
+      currentStreak: currentStreak ?? this.currentStreak,
+      longestStreak: longestStreak ?? this.longestStreak,
+      lastActiveDate: lastActiveDate ?? this.lastActiveDate,
+      unlockedBadges: unlockedBadges ?? this.unlockedBadges,
+      purchasedUnlocks: purchasedUnlocks ?? this.purchasedUnlocks,
+      activeTheme: activeTheme ?? this.activeTheme,
+      soundsEnabled: soundsEnabled ?? this.soundsEnabled,
+      hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
+      createdAt: createdAt ?? this.createdAt,
+      notificationPreferences: notificationPreferences ?? this.notificationPreferences,
+      xpHistory: xpHistory ?? this.xpHistory,
+      totalCoinsEarned: totalCoinsEarned ?? this.totalCoinsEarned,
+      totalCoinsSpent: totalCoinsSpent ?? this.totalCoinsSpent,
+      avatarStyle: avatarStyle ?? this.avatarStyle,
+      notificationSchedule: notificationSchedule ?? this.notificationSchedule,
+      themeMode: themeMode ?? this.themeMode,
+      privacySettings: privacySettings ?? this.privacySettings,
+      totalGoalsCreated: totalGoalsCreated ?? this.totalGoalsCreated,
+      totalGoalsCompleted: totalGoalsCompleted ?? this.totalGoalsCompleted,
+      totalChallengesCompleted: totalChallengesCompleted ?? this.totalChallengesCompleted,
+      totalDeposits: totalDeposits ?? this.totalDeposits,
+      totalSavedAmount: totalSavedAmount ?? this.totalSavedAmount,
+      hourlyRate: hourlyRate ?? this.hourlyRate,
+      bio: bio ?? this.bio,
+      location: location ?? this.location,
+      birthDate: birthDate ?? this.birthDate,
+    );
+  }
+
   /// Створює копію профілю для бекапу.
   Map<String, dynamic> toBackupMap() {
     return {
@@ -877,6 +956,7 @@ class UserProfile {
       totalChallengesCompleted: (json['totalChallengesCompleted'] as int?) ?? 0,
       totalDeposits: (json['totalDeposits'] as int?) ?? 0,
       totalSavedAmount: (json['totalSavedAmount'] as num?)?.toDouble() ?? 0,
+      hourlyRate: (json['hourlyRate'] as num?)?.toDouble() ?? 200.0,
       bio: json['bio'] as String?,
       location: json['location'] as String?,
       birthDate: json['birthDate'] != null
@@ -915,6 +995,7 @@ class UserProfile {
       'totalChallengesCompleted': totalChallengesCompleted,
       'totalDeposits': totalDeposits,
       'totalSavedAmount': totalSavedAmount,
+      'hourlyRate': hourlyRate,
       'bio': bio,
       'location': location,
       'birthDate': birthDate?.toIso8601String(),
