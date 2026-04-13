@@ -590,7 +590,13 @@ class _AppFabState extends State<AppFab> with SingleTickerProviderStateMixin {
                 const SizedBox(height: Spacing.xs),
                 FloatingActionButton.small(
                   heroTag: 'speed_dial_$index',
-                  onPressed: action.onTap,
+                  onPressed: () {
+                    action.onTap();
+                    if (_isSpeedDialOpen) {
+                      setState(() => _isSpeedDialOpen = false);
+                      _speedDialController.reverse();
+                    }
+                  },
                   backgroundColor: action.color ?? _effectiveColor,
                   elevation: 0,
                   child: Icon(action.icon, color: _textColor),

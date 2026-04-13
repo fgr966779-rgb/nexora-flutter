@@ -580,14 +580,17 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
   // ─── Внесок ───────────────────────────────────────────────
 
   /// Додає внесок до цілі.
-  Future<void> addDeposit(double amount, {String? comment}) async {
+  /// [isSilent] — якщо true, не активує глобальний індикатор завантаження (скелетон).
+  Future<bool> addDeposit(double amount, {String? comment, bool isSilent = false}) async {
     final goal = state.goal;
     if (goal == null) {
       state = state.copyWith(error: 'Немає активної цілі');
-      return;
+      return false;
     }
 
-    state = state.copyWith(isLoading: true);
+    if (!isSilent) {
+      state = state.copyWith(isLoading: true);
+    }
 
     try {
       final user = _userRepo.getUser();
@@ -639,7 +642,12 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
       user.lastActiveDate = DateTime.now();
       _userRepo.save(user);
 
-      await loadDashboard();
+      // Оновлюємо дані локально для миттєвого відгуку, якщо це "тихий" внесок
+      if (isSilent) {
+        await refreshData();
+      } else {
+        await loadDashboard();
+      }
 
       _emitAnalytics('deposit_added', {
         'amount': amount,
@@ -649,11 +657,13 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
         'leveled_up': leveledUp,
         'goal_reached': goalReached,
       });
+      return true;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: 'Помилка внеску: $e',
       );
+      return false;
     }
   }
 
@@ -680,9 +690,9 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
 
   // ─── Швидкі дії ──────────────────────────────────────────
 
-  /// Швидкий внесок на стандартну суму.
-  Future<void> quickDeposit(double amount) async {
-    await addDeposit(amount);
+  /// Швидкий внесок на стандартну суму без блокування інтерфейсу.
+  Future<bool> quickDeposit(double amount) async {
+    return await addDeposit(amount, isSilent: true);
   }
 
   /// Перемикає показ порад щодо заощаджень.

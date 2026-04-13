@@ -55,6 +55,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   bool _showQuickStats = false;
   bool _showTipOfDay = false;
   bool _showFriendActivity = false;
+  bool _isFamilyContext = false;
   late AnimationController _refreshController;
   late AnimationController _fabController;
   late ScrollController _scrollController;
@@ -113,7 +114,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     _refreshController.forward(from: 0);
     await Future.delayed(const Duration(milliseconds: 800));
     if (mounted) {
-      ref.read(dashboardProvider.notifier).loadData();
+      ref.read(dashboardProvider.notifier).loadDashboard();
       setState(() => _isRefreshing = false);
     }
   }
@@ -121,6 +122,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   void _showQuickAdd() {
     HapticService.mediumTap();
     showModalBottomSheet(context: context, isScrollControlled: true, backgroundColor: Colors.transparent, builder: (_) => const QuickAddSheet());
+  }
+
+  /// Швидкий внесок через Speed Dial.
+  Future<void> _handleQuickDeposit(double amount) async {
+    HapticService.coinDrop();
+    final success = await ref.read(dashboardProvider.notifier).quickDeposit(amount);
+    if (success && mounted) {
+      AppToast.show(
+        context,
+        message: '+${amount.toInt()} грн успішно!',
+        type: ToastType.success,
+        position: ToastPosition.bottomSafe,
+        isLightTheme: Theme.of(context).brightness == Brightness.light,
+      );
+    }
   }
 
   /// Перемкнути туторіал-оверлей.
@@ -244,13 +260,36 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   ],
                 ),
       floatingActionButton: state.goal != null && !state.isLoading
-          ? AnimatedBuilder(
-              animation: _fabController,
-              builder: (context, child) {
-                final scale = 1.0 + _fabController.value * 0.05;
-                return Transform.scale(scale: scale, child: child);
-              },
-              child: AppFab(onPressed: _showQuickAdd, isLightTheme: isLight),
+          ? AppFab(
+              onPressed: _showQuickAdd,
+              variant: AppFabVariant.speedDial,
+              isLightTheme: isLight,
+              speedDialActions: [
+                SpeedDialAction(
+                  icon: Icons.add_circle_outline_rounded,
+                  label: '+200 грн',
+                  onTap: () => _handleQuickDeposit(200),
+                  color: AppColorsPS5.success,
+                ),
+                SpeedDialAction(
+                  icon: Icons.add_circle_outline_rounded,
+                  label: '+100 грн',
+                  onTap: () => _handleQuickDeposit(100),
+                  color: AppColorsPS5.accent,
+                ),
+                SpeedDialAction(
+                  icon: Icons.add_circle_outline_rounded,
+                  label: '+50 грн',
+                  onTap: () => _handleQuickDeposit(50),
+                  color: AppColorsPS5.coin,
+                ),
+                SpeedDialAction(
+                  icon: Icons.edit_rounded,
+                  label: 'Інша сума',
+                  onTap: _showQuickAdd,
+                  color: isLight ? AppColorsMonitor.textSecondary : AppColorsPS5.textSecondary,
+                ),
+              ],
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -305,6 +344,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   Widget _buildContent(DashboardState state, bool isLight, bool isAlmost) {
     final goal = state.goal!;
     final user = state.user;
+    final accent = isLight ? AppColorsMonitor.accent : AppColorsPS5.accent;
 
     return SafeArea(
       child: RefreshIndicator(
@@ -340,7 +380,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                           ),
                           if (!_showCollapsedHeader) ...[
                             const SizedBox(height: 2),
-                            Text(_getGreeting(), style: AppTypography.bodySmall.copyWith(color: isLight ? AppColorsMonitor.textSecondary : AppColorsPS5.textSecondary)),
+                            Row(
+                              children: [
+                                Text(_getGreeting(), style: AppTypography.bodySmall.copyWith(color: isLight ? AppColorsMonitor.textSecondary : AppColorsPS5.textSecondary)),
+                                const SizedBox(width: Spacing.sm),
+                                // ── Context Pill (Я / Сім'я) ─────────────
+                                _buildContextPill(isLight, accent),
+                              ],
+                            ),
                           ],
                         ],
                       ),
@@ -740,10 +787,57 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 6) return 'На добраніч, чемпіоне 🌙';
+    if (hour < 6) return 'На добраніч 🌙';
     if (hour < 12) return 'Доброго ранку! ☀️';
     if (hour < 18) return 'Гарного дня! 💪';
     return 'Вечірній внесок? 🔥';
+  }
+
+  Widget _buildContextPill(bool isLight, Color accent) {
+    return GestureDetector(
+      onTap: () {
+        HapticService.selection();
+        setState(() => _isFamilyContext = !_isFamilyContext);
+        AppToast.show(
+          context,
+          message: _isFamilyContext ? 'Перемкнуто на сімейний режим' : 'Перемкнуто на особистий режим',
+          type: ToastType.info,
+          position: ToastPosition.bottomSafe,
+          isLightTheme: isLight,
+        );
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: _isFamilyContext ? accent.withOpacity(0.15) : (isLight ? AppColorsMonitor.border : AppColorsPS5.border).withOpacity(0.3),
+          borderRadius: BorderRadius.circular(Radii.pill),
+          border: Border.all(
+            color: _isFamilyContext ? accent.withOpacity(0.3) : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              _isFamilyContext ? Icons.people_rounded : Icons.person_rounded,
+              size: 12,
+              color: _isFamilyContext ? accent : (isLight ? AppColorsMonitor.textSecondary : AppColorsPS5.textSecondary),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              _isFamilyContext ? 'Сім\'я' : 'Я',
+              style: AppTypography.labelSmall.copyWith(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: _isFamilyContext ? accent : (isLight ? AppColorsMonitor.textSecondary : AppColorsPS5.textSecondary),
+              ),
+            ),
+          ],
+        ),
+      ).animate(target: _isFamilyContext ? 1 : 0).shimmer(duration: 1000.ms, color: accent.withOpacity(0.2)),
+    );
   }
 }
 
