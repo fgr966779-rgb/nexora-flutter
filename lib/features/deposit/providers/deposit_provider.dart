@@ -453,8 +453,14 @@ class DepositNotifier extends StateNotifier<DepositState> {
 
       // Оновлюємо ціль.
       goal.currentAmount += amount;
+      final prevDepositDate = goal.lastDepositDate;
       goal.lastDepositDate = DateTime.now();
-      goal.streakDays = StreakCalculator.updateStreak(goal)['current']!;
+      goal.streakDays = StreakCalculator.updateStreak(
+        lastDepositDate: prevDepositDate,
+        currentStreak: goal.streakDays,
+        longestStreak: goal.longestStreak,
+        isHolidayModeActive: goal.isHolidayModeActive,
+      )['current']!;
       if (goal.streakDays > goal.longestStreak) {
         goal.longestStreak = goal.streakDays;
       }

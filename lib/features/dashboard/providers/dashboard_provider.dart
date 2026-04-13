@@ -263,7 +263,12 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
       int longestStreak = 0;
 
       if (goal != null) {
-        final streakData = StreakCalculator.updateStreak(goal);
+        final streakData = StreakCalculator.updateStreak(
+          lastDepositDate: goal.lastDepositDate,
+          currentStreak: goal.streakDays,
+          longestStreak: goal.longestStreak,
+          isHolidayModeActive: goal.isHolidayModeActive,
+        );
         currentStreak = streakData['current']!;
         longestStreak = streakData['longest']!;
       }
@@ -617,8 +622,14 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
 
       // Оновлюємо ціль.
       goal.currentAmount += amount;
+      final prevDepositDate = goal.lastDepositDate;
       goal.lastDepositDate = DateTime.now();
-      goal.streakDays = StreakCalculator.updateStreak(goal)['current']!;
+      goal.streakDays = StreakCalculator.updateStreak(
+        lastDepositDate: prevDepositDate,
+        currentStreak: goal.streakDays,
+        longestStreak: goal.longestStreak,
+        isHolidayModeActive: goal.isHolidayModeActive,
+      )['current']!;
       if (goal.streakDays > goal.longestStreak) {
         goal.longestStreak = goal.streakDays;
       }
@@ -694,6 +705,20 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
   void showNextTip() {
     final tip = _getRandomSavingTip();
     state = state.copyWith(currentSavingTip: tip);
+  }
+
+  /// Перемикає режим відпустки для активної цілі.
+  Future<void> toggleHolidayMode(bool value) async {
+    final goal = state.goal;
+    if (goal == null) return;
+
+    final updatedGoal = goal.copyWith(isHolidayModeActive: value);
+    _goalRepo.updateGoal(updatedGoal);
+
+    // Оновлюємо стан дашборду.
+    state = state.copyWith(goal: updatedGoal);
+
+    _emitAnalytics('holiday_mode_toggled', {'enabled': value, 'goal_id': goal.id});
   }
 
   /// Повертає випадкову пораду щодо заощаджень.
