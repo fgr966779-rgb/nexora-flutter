@@ -226,10 +226,12 @@ class StreakCalculator {
   // ── Базові розрахунки ──────────────────────────────────────────────
 
   /// Оновлює серію на основі [lastDepositDate] та поточної дати.
+  /// Враховує [isHolidayModeActive] — якщо режим активовано, серія не обнуляється.
   static Map<String, int> updateStreak({
     DateTime? lastDepositDate,
     int currentStreak = 0,
     int longestStreak = 0,
+    bool isHolidayModeActive = false,
   }) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -251,7 +253,10 @@ class StreakCalculator {
     } else if (daysDiff == 1) {
       currentStreak += 1;
     } else {
-      currentStreak = 0;
+      // Якщо режим відпустки активний, серія не обривається, а "заморожується".
+      if (!isHolidayModeActive) {
+        currentStreak = 0;
+      }
     }
 
     if (currentStreak > longestStreak) {
@@ -332,8 +337,9 @@ class StreakCalculator {
     DateTime? lastDepositDate,
     required int currentStreak,
     required bool isFrozen,
+    bool isHolidayModeActive = false,
   }) {
-    if (isFrozen) return StreakRiskLevel.safe;
+    if (isFrozen || isHolidayModeActive) return StreakRiskLevel.safe;
     if (currentStreak == 0) return StreakRiskLevel.broken;
 
     final now = DateTime.now();

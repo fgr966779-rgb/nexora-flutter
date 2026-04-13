@@ -377,6 +377,31 @@ class _GoalDetailScreenState extends ConsumerState<GoalDetailScreen> {
                   ),
                   _DetailRow(label: 'Усього внесків', value: '${transactions.length}', isLight: isLight),
                   _DetailRow(label: 'Найдовша серія', value: '${goal.longestStreak} дн.', isLight: isLight),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(
+                      'Режим відпустки',
+                      style: AppTypography.labelLarge.copyWith(
+                        color: isLight ? AppColorsMonitor.textPrimary : AppColorsPS5.textPrimary,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Зберігає вашу серію днів, навіть якщо ви не робите внесків',
+                      style: AppTypography.labelSmall.copyWith(
+                        color: isLight ? AppColorsMonitor.textSecondary : AppColorsPS5.textSecondary,
+                      ),
+                    ),
+                    value: goal.isHolidayModeActive,
+                    activeColor: isLight ? AppColorsMonitor.accent : AppColorsPS5.accent,
+                    onChanged: (bool value) {
+                      ref.read(dashboardProvider.notifier).toggleHolidayMode(value);
+                      context.showToast(
+                        value ? 'Режим відпустки активовано 🏖️' : 'Режим відпустки вимкнено',
+                        icon: value ? Icons.beach_access_rounded : Icons.notifications_active_rounded,
+                      );
+                    },
+                  ),
+                  const Divider(),
                   _DetailRow(
                     label: 'Щоденний середній',
                     value: daysPassed > 0
