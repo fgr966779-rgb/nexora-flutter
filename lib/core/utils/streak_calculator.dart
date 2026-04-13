@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -226,16 +227,22 @@ class StreakCalculator {
   // ── Базові розрахунки ──────────────────────────────────────────────
 
   /// Оновлює серію на основі [lastDepositDate] та поточної дати.
+  ///
+  /// [isNewDeposit] — чи викликається метод під час здійснення нового внеску.
+  /// Якщо [isHolidayModeActive] увімкнено, серія не скидається при пропуску днів.
   static Map<String, int> updateStreak({
     DateTime? lastDepositDate,
     int currentStreak = 0,
     int longestStreak = 0,
+    bool isHolidayModeActive = false,
+    bool isNewDeposit = false,
   }) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
     if (lastDepositDate == null) {
-      return {'current': 0, 'longest': longestStreak};
+      final streak = isNewDeposit ? 1 : 0;
+      return {'current': streak, 'longest': math.max(streak, longestStreak)};
     }
 
     final lastDepositDay = DateTime(
@@ -247,11 +254,20 @@ class StreakCalculator {
     final daysDiff = today.difference(lastDepositDay).inDays;
 
     if (daysDiff == 0) {
-      // Поповнення було сьогодні.
+      // Внесок вже був сьогодні.
     } else if (daysDiff == 1) {
-      currentStreak += 1;
+      // Останній внесок був учора.
+      if (isNewDeposit) {
+        currentStreak += 1;
+      }
     } else {
-      currentStreak = 0;
+      // Пропущено більше одного дня.
+      if (!isHolidayModeActive) {
+        currentStreak = isNewDeposit ? 1 : 0;
+      } else if (isNewDeposit) {
+        // У режимі відпустки просто продовжуємо серію.
+        currentStreak += 1;
+      }
     }
 
     if (currentStreak > longestStreak) {

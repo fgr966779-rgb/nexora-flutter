@@ -146,6 +146,7 @@ class Goal {
   String? note;
   String? iconEmoji;
   int depositCount;
+  bool isHolidayModeActive;
 
   Goal({
     required this.id,
@@ -169,6 +170,7 @@ class Goal {
     this.note,
     this.iconEmoji,
     this.depositCount = 0,
+    this.isHolidayModeActive = false,
   })  : subGoals = subGoals ?? [],
         microGoals = microGoals ?? [],
         tags = tags ?? [];
@@ -979,6 +981,7 @@ class Goal {
       note: json['note'] as String?,
       iconEmoji: json['iconEmoji'] as String?,
       depositCount: (json['depositCount'] as int?) ?? 0,
+      isHolidayModeActive: (json['isHolidayModeActive'] as bool?) ?? false,
     );
   }
 
@@ -1005,6 +1008,7 @@ class Goal {
       'note': note,
       'iconEmoji': iconEmoji,
       'depositCount': depositCount,
+      'isHolidayModeActive': isHolidayModeActive,
     };
   }
 
@@ -1031,6 +1035,7 @@ class Goal {
     String? note,
     String? iconEmoji,
     int? depositCount,
+    bool? isHolidayModeActive,
   }) {
     return Goal(
       id: id ?? this.id,
@@ -1054,6 +1059,7 @@ class Goal {
       note: note ?? this.note,
       iconEmoji: iconEmoji ?? this.iconEmoji,
       depositCount: depositCount ?? this.depositCount,
+      isHolidayModeActive: isHolidayModeActive ?? this.isHolidayModeActive,
     );
   }
 
